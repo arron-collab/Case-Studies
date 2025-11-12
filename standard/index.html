@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cohort Landing Page</title>
+    <!-- Load React -->
+    <script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
+    <!-- Load Babel to transpile JSX in the browser -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        /* Basic reset to ensure no default margins/padding */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+        }
+    </style>
+</head>
+<body>
+    <!-- This is the root element where the React app will be mounted -->
+    <div id="root"></div>
+
+    <!-- 
+      This script tag with type="text/babel" will be processed by Babel.
+      It contains the entire React component and the code to render it.
+    -->
+    <script type="text/babel">
+        // We use React's built-in hooks from the global React object
+        const { useState, useEffect, useRef } = React;
+
+        const CohortLanding = () => {
+          const [scrollProgress, setScrollProgress] = useState(0);
+          const [visibleElements, setVisibleElements] = useState(new Set());
+          const [hoveredCard, setHoveredCard] = useState(null);
+          const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+          const [hoveredLogo, setHoveredLogo] = useState(null);
+
+          const colors = {
+            bg: '#000000',
+            bgAlt: '#0a0a0a',
+            bgCard: '#1a1a1a',
+            ritual: '#d4af37',
+            ddg: '#DE5833',
+            ecosia: '#5DD25E',
+            textPrimary: '#ffffff',
+            textSecondary: '#a0a0a0',
+            textMuted: '#707070',
+            border: '#2a2a2a'
+          };
+
+          useEffect(() => {
+            const handleScroll = () => {
+              const windowHeight = window.innerHeight;
+              const documentHeight = document.documentElement.scrollHeight - windowHeight;
+              const scrolled = window.scrollY;
+              const progress = (scrolled / documentHeight) * 100;
+              setScrollProgress(progress);
+            };
+
+            const handleMouseMove = (e) => {
+              setMousePosition({ 
+                x: (e.clientX / window.innerWidth - 0.5) * 2,
+                y: (e.clientY / window.innerHeight - 0.5) * 2 
+              });
+            };
+
+            window.addEventListener('scroll', handleScroll);
+            window.addEventListener('mousemove', handleMouseMove);
+            handleScroll();
+
+            return () => {
+              window.removeEventListener('scroll', handleScroll);
+              window.removeEventListener('mousemove', handleMouseMove);
+            };
+          }, []);
+
+          useEffect(() => {
+            const observer = new IntersectionObserver(
+              (entries) => {
+                entries.forEach(entry => {
+                  const id = entry.target.dataset.fadeId;
+                  if (entry.isIntersecting) {
+                    setVisibleElements(prev => new Set(prev).add(id));
+                  }
+                });
+              },
+              { threshold: 0.2 }
+            );
+
+            const elements = document.querySelectorAll('[data-fade-id]');
+            elements.forEach(el => observer.observe(el));
+            
+            return () => observer.disconnect();
+          }, []);
+
+          const caseStudies = [
+            {
+              id: 'ritual',
+              title: 'Rituals Cosmetics',
+              logo: 'https://upload.wikimedia.org/wikipedia/commons/1/1c/Rituals_Cosmetics_logo.png',
+              logoFallback: 'RITUALS',
+              tagline: 'Speed + Quality',
+              preview: 'Delivered premium, multi-market product launch in an impossible 30-day timeline',
+              keyResult: '8.18%',
+              resultLabel: 'Engagement Rate',
+              metrics: [
+                { value: '42.8K', label: 'Views' },
+                { value: '$2', label: 'CPE' },
+                { value: '4', label: 'Markets' }
+              ],
+              color: colors.ritual,
+              link: 'ritual_case_study.html',
+              gradient: `radial-gradient(circle at 20% 50%, ${colors.ritual}15, transparent 50%)`,
+              position: { x: 15, y: 50 }
+            },
+            {
+              id: 'duckduckgo',
+              title: 'DuckDuckGo',
+              logo: 'https://play-lh.googleusercontent.com/NW2ASwJ4qtxfThhVIpm4641sR4o-yGv80yqaJnOnpC4lEmdxEcNTFcF6-TlZYtmdaA',
+              logoFallback: 'DuckDuckGo',
+              tagline: 'Testing + Learning',
+              preview: 'Drove 7.3M+ views across two markets with privacy-first messaging',
+              keyResult: '7.3M',
+              resultLabel: 'Total Views',
+              metrics: [
+                { value: '25.2M', label: 'Reach' },
+                { value: '29', label: 'Creators' },
+                { value: '4.5%', label: 'Peak ER' }
+              ],
+              color: colors.ddg,
+              link: 'duckduckgo-case-study.html',
+              gradient: `radial-gradient(circle at 50% 50%, ${colors.ddg}15, transparent 50%)`,
+              position: { x: 50, y: 50 }
+            },
+            {
+              id: 'ecosia',
+              title: 'Ecosia',
+              logo: 'https://yt3.googleusercontent.com/yrpFqU6EcBnJFF_2FbMJy8zWtTyXum3a3CPcAA_ys4ULIrvdkgatiazUEOo2fM7LhtsXzgIr=s900-c-k-c0x00ffffff-no-rj',
+              logoFallback: 'ecosia',
+              tagline: 'Scale + Efficiency',
+              preview: 'Transformed $57 CPM into breakthrough $27 CPM with values-driven strategy',
+              keyResult: '53%',
+              resultLabel: 'Cost Reduction',
+              metrics: [
+                { value: '3.1M', label: 'Views' },
+                { value: '43', label: 'Creators' },
+                { value: '$6', label: 'Peak CPM' }
+              ],
+              color: colors.ecosia,
+              link: 'ecosia_case_study.html',
+              gradient: `radial-gradient(circle at 80% 50%, ${colors.ecosia}15, transparent 50%)`,
+              position: { x: 85, y: 50 }
+            }
+          ];
+
+          const openCaseStudy = (link) => {
+            window.open(link, '_blank');
+          };
+
+          return (
+            <div style={{
+              backgroundColor: colors.bg,
+              color: colors.textPrimary,
+              fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif',
+              minHeight: '100vh',
+              position: 'relative',
+              overflow: 'hidden'
+            }}>
+              {/* Progress Bar */}
+              <div style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                height: '3px',
+                width: `${scrollProgress}%`,
+                background: `linear-gradient(90deg, ${colors.ritual}, ${colors.ecosia}, ${colors.ddg})`,
+                zIndex: 100,
+                transition: 'width 0.1s ease-out'
+              }} />
+
+              {/* Ambient Background Effects */}
+              <div style={{
+                position: 'fixed',
+                top: '20%',
+                left: '10%',
+                width: '600px',
+                height: '600px',
+                background: `radial-gradient(circle, ${colors.ritual}08, transparent 70%)`,
+                borderRadius: '50%',
+                filter: 'blur(100px)',
+                pointerEvents: 'none',
+                animation: 'float 20s infinite ease-in-out'
+              }} />
+              <div style={{
+                position: 'fixed',
+                top: '60%',
+                right: '10%',
+                width: '500px',
+                height: '500px',
+                background: `radial-gradient(circle, ${colors.ecosia}08, transparent 70%)`,
+                borderRadius: '50%',
+                filter: 'blur(100px)',
+                pointerEvents: 'none',
+                animation: 'float 25s infinite ease-in-out reverse'
+              }} />
+
+              {/* Hero Section */}
+              <section style={{
+                minHeight: '100vh',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '80px 24px',
+                position: 'relative'
+              }}>
+                {/* Cohort Logo */}
+                <div
+                  data-fade-id="logo"
+                  style={{
+                    opacity: visibleElements.has('logo') ? 1 : 0,
+                    transform: visibleElements.has('logo') ? 'translateY(0)' : 'translateY(30px)',
+                    transition: 'all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+                    marginBottom: '48px'
+                  }}
+                >
+                  <img 
+                    src="https://i.ibb.co/DfM91VG0/wearecohort-logo.jpg" 
+                    alt="Cohort" 
+                    style={{
+                      width: '160px',
+                      height: 'auto',
+                      borderRadius: '16px',
+                      boxShadow: '0 0px 50px rgba(255,255,255,0.4)'
+                    }}
+                  />
+                </div>
+
+                {/* Main Headline */}
+                <h1
+                  data-fade-id="headline"
+                  style={{
+                    fontSize: 'clamp(48px, 8vw, 120px)',
+                    fontWeight: 200,
+                    lineHeight: 1.1,
+                    textAlign: 'center',
+                    marginBottom: '32px',
+                    letterSpacing: '-0.03em',
+                    opacity: visibleElements.has('headline') ? 1 : 0,
+                    transform: visibleElements.has('headline') ? 'translateY(0)' : 'translateY(30px)',
+                    transition: 'all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s',
+                    background: 'linear-gradient(to bottom, #ffffff, #a0a0a0)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text'
+                  }}
+                >
+                  Extraordinary<br/>by design.
+                </h1>
+
+                {/* Subheadline */}
+                <p
+                  data-fade-id="subheadline"
+                  style={{
+                    fontSize: 'clamp(20px, 3vw, 32px)',
+                    color: colors.textSecondary,
+                    textAlign: 'center',
+                    marginBottom: '80px',
+                    maxWidth: '800px',
+                    lineHeight: 1.5,
+                    fontWeight: 300,
+                    opacity: visibleElements.has('subheadline') ? 1 : 0,
+                    transform: visibleElements.has('subheadline') ? 'translateY(0)' : 'translateY(30px)',
+                    transition: 'all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.4s'
+                  }}
+                >
+                  Three breakthrough campaigns. Three global brands.<br/>Real results that redefine what's possible.
+                </p>
+
+                {/* Interactive Brand Logos - Floating Network */}
+                <div
+                  data-fade-id="brands"
+                  style={{
+                    position: 'relative',
+                    width: '100%',
+                    maxWidth: '1000px',
+                    height: '450px',
+                    marginBottom: '80px',
+                    opacity: visibleElements.has('brands') ? 1 : 0,
+                    transition: 'all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.6s'
+                  }}
+                >
+                  {/* Connection Lines */}
+                  <svg style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    pointerEvents: 'none',
+                    zIndex: 1
+                  }}>
+                    <line x1="20%" y1="50%" x2="50%" y2="50%" stroke={colors.ritual} strokeWidth="2" opacity="0.3" strokeDasharray="5,5">
+                      <animate attributeName="stroke-dashoffset" from="0" to="10" dur="1s" repeatCount="indefinite" />
+                    </line>
+                    <line x1="50%" y1="50%" x2="80%" y2="50%" stroke={colors.ecosia} strokeWidth="2" opacity="0.3" strokeDasharray="5,5">
+                      <animate attributeName="stroke-dashoffset" from="0" to="10" dur="1s" repeatCount="indefinite" />
+                    </line>
+                  </svg>
+
+                  {/* Brand Logos - Mouse Interactive */}
+                  {caseStudies.map((study, index) => {
+                    const parallaxX = mousePosition.x * (10 + index * 5);
+                    const parallaxY = mousePosition.y * (10 + index * 5);
+                    const isHovered = hoveredLogo === study.id;
+                    const scale = isHovered ? 1.2 : 1;
+                    
+                    // Helper function for border radius
+                    const getBorderRadius = (id) => {
+                      if (id === 'ritual') return '20px';
+                      if (id === 'duckduckgo' || id === 'ecosia') return '100px';
+                      return '0px';
+                    };
+                    
+                    return (
+                      <div
+                        key={study.id}
+                        onClick={() => openCaseStudy(study.link)}
+                        onMouseEnter={() => setHoveredLogo(study.id)}
+                        onMouseLeave={() => setHoveredLogo(null)}
+                        style={{
+                          position: 'absolute',
+                          left: `${study.position.x}%`,
+                          top: `${study.position.y}%`,
+                          transform: `translate(-50%, -50%) translate(${parallaxX}px, ${parallaxY}px) scale(${scale})`,
+                          cursor: 'pointer',
+                          transition: 'transform 0.3s ease',
+                          zIndex: isHovered ? 20 : 10
+                        }}
+                      >
+                        <div style={{
+                          width: index === 1 ? '240px' : '210px',
+                          height: index === 1 ? '240px' : '210px',
+                          borderRadius: '50%',
+                          background: `radial-gradient(circle, ${study.color}10, ${colors.bg} 85%)`,
+                          border: `3px solid ${study.color}`,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          boxShadow: isHovered 
+                            ? `0 0 100px ${study.color}80, 0 0 200px ${study.color}40`
+                            : `0 0 60px ${study.color}60`,
+                          backdropFilter: 'blur(20px)',
+                          position: 'relative',
+                          overflow: 'hidden',
+                          transition: 'all 0.3s ease',
+                          animation: `float ${15 + index * 5}s infinite ease-in-out ${index * 0.5}s`
+                        }}>
+                          {/* Pulsing Gradient Background */}
+                          <div style={{
+                            position: 'absolute',
+                            inset: 0,
+                            background: `radial-gradient(circle at 30% 30%, ${study.color}20, transparent)`,
+                            animation: `pulse 3s infinite ease-in-out ${index}s`
+                          }} />
+                          
+                          {/* Logo Image */}
+                          <img 
+                            src={study.logo}
+                            alt={study.title}
+                            style={{
+                              maxWidth: index === 1 ? '160px' : '140px',
+                              maxHeight: index === 1 ? '160px' : '140px',
+                              objectFit: 'contain',
+                              filter: 'none',
+                              position: 'relative',
+                              zIndex: 1,
+                              transition: 'all 0.3s ease',
+                              borderRadius: getBorderRadius(study.id)
+                            }}
+                            onError={(e) => {
+                              e.target.style.display = 'none';
+                              e.target.nextSibling.style.display = 'block';
+                            }}
+                          />
+                          
+                          {/* Fallback Text */}
+                          <div style={{
+                            display: 'none',
+                            fontSize: study.id === 'duckduckgo' ? '28px' : '36px',
+                            fontWeight: study.id === 'duckduckgo' ? 700 : 300,
+                            color: study.color,
+                            textAlign: 'center',
+                            padding: '20px'
+                          }}>
+                            {study.logoFallback}
+                          </div>
+
+                          {/* Hover Ring Effect */}
+                          {isHovered && (
+                            <div style={{
+                              position: 'absolute',
+                              inset: '-10px',
+                              border: `2px solid ${study.color}`,
+                              borderRadius: '50%',
+                              animation: 'ping 1s cubic-bezier(0, 0, 0.2, 1) infinite'
+                            }} />
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Instruction Text */}
+                <p
+                  data-fade-id="instruction"
+                  style={{
+                    fontSize: '14px',
+                    color: colors.textMuted,
+                    textAlign: 'center',
+                    opacity: visibleElements.has('instruction') ? 1 : 0,
+                    transition: 'all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.8s',
+                    letterSpacing: '0.05em',
+                    textTransform: 'uppercase',
+                    fontWeight: 500
+                  }}
+                >
+                  Select a campaign to explore →
+                </p>
+              </section>
+
+              {/* Case Study Cards Section */}
+              <section style={{
+                minHeight: '100vh',
+                padding: '120px 24px',
+                backgroundColor: colors.bgAlt,
+                position: 'relative'
+              }}>
+                <div style={{
+                  maxWidth: '1400px',
+                  margin: '0 auto'
+                }}>
+                  <h2
+                    data-fade-id="cards-title"
+                    style={{
+                      fontSize: 'clamp(40px, 6vw, 72px)',
+                      fontWeight: 200,
+                      textAlign: 'center',
+                      marginBottom: '80px',
+                      opacity: visibleElements.has('cards-title') ? 1 : 0,
+                      transition: 'all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+                      letterSpacing: '-0.02em'
+                    }}
+                  >
+                    The campaigns
+                  </h2>
+
+                  <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))',
+                    gap: '32px'
+                  }}>
+                    {caseStudies.map((study, index) => (
+                      <div
+                        key={study.id}
+                        data-fade-id={`card-${study.id}`}
+                        onClick={() => openCaseStudy(study.link)}
+                        onMouseEnter={() => setHoveredCard(study.id)}
+                        onMouseLeave={() => setHoveredCard(null)}
+                        style={{
+                          backgroundColor: hoveredCard === study.id ? `${study.color}` : colors.bgCard,
+                          borderRadius: '32px',
+                          padding: '48px 40px',
+                          border: `2px solid ${study.color}`,
+                          cursor: 'pointer',
+                          transition: 'all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+                          transform: hoveredCard === study.id ? 'translateY(-12px) scale(1.02)' : 'translateY(0)',
+                          boxShadow: hoveredCard === study.id ? `0 32px 64px ${study.color}50` : '0 8px 32px rgba(0,0,0,0.3)',
+                          opacity: visibleElements.has(`card-${study.id}`) ? 1 : 0,
+                          position: 'relative',
+                          overflow: 'hidden'
+                        }}
+                      >
+                        {/* Background gradient */}
+                        <div style={{
+                          position: 'absolute',
+                          inset: 0,
+                          background: study.gradient,
+                          opacity: hoveredCard === study.id ? 0 : 1,
+                          transition: 'opacity 0.5s ease',
+                          pointerEvents: 'none'
+                        }} />
+
+                        {/* Content */}
+                        <div style={{ position: 'relative', zIndex: 1 }}>
+                          {/* Logo Container */}
+                          <div style={{
+                            width: '100%',
+                            height: '180px',
+                            backgroundColor: hoveredCard === study.id ? colors.bgCard : `${study.color}15`,
+                            borderRadius: '20px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            marginBottom: '32px',
+                            border: `1px solid ${hoveredCard === study.id ? colors.border : study.color}80`,
+                            transition: 'all 0.3s ease',
+                            boxShadow: hoveredCard === study.id ? `0 8px 24px ${study.color}30` : 'none'
+                          }}>
+                            <img 
+                              src={study.logo}
+                              alt={study.title}
+                              style={{
+                                maxWidth: '180px',
+                                maxHeight: '120px',
+                                objectFit: 'contain',
+                                filter: 'none',
+                                borderRadius: '12px'
+                              }}
+                              onError={(e) => {
+                                e.target.style.display = 'none';
+                                e.target.nextSibling.style.display = 'flex';
+                              }}
+                            />
+                            <div style={{
+                              display: 'none',
+                              fontSize: '42px',
+                              fontWeight: study.id === 'duckduckgo' ? 700 : 300,
+                              color: hoveredCard === study.id ? colors.textPrimary : study.color,
+                              alignItems: 'center',
+                              justifyContent: 'center'
+                            }}>
+                              {study.logoFallback}
+                            </div>
+                          </div>
+
+                          {/* Tagline */}
+                          <div style={{
+                            fontSize: '12px',
+                            fontWeight: 600,
+                            letterSpacing: '0.15em',
+                            textTransform: 'uppercase',
+                            color: hoveredCard === study.id ? colors.bg : study.color,
+                            marginBottom: '16px',
+                            transition: 'color 0.3s ease'
+                          }}>
+                            {study.tagline}
+                          </div>
+
+                          {/* Preview */}
+                          <p style={{
+                            fontSize: '20px',
+                            lineHeight: 1.5,
+                            color: hoveredCard === study.id ? colors.bg : colors.textPrimary,
+                            marginBottom: '32px',
+                            fontWeight: 300,
+                            minHeight: '80px',
+                            transition: 'color 0.3s ease'
+                          }}>
+                            {study.preview}
+                          </p>
+
+                          {/* Key Result */}
+                          <div style={{
+                            padding: '32px',
+                            backgroundColor: hoveredCard === study.id ? colors.bg : `${study.color}15`,
+                            borderRadius: '16px',
+                            marginBottom: '32px',
+                            textAlign: 'center',
+                            border: hoveredCard === study.id ? 'none' : `1px solid ${study.color}40`,
+                            transition: 'all 0.3s ease'
+                          }}>
+                            <div style={{
+                              fontSize: '64px',
+                              fontWeight: 200,
+                              color: study.color,
+                              marginBottom: '8px',
+                              lineHeight: 1
+                            }}>
+                              {study.keyResult}
+                            </div>
+                            <div style={{
+                              fontSize: '13px',
+                              color: hoveredCard === study.id ? colors.textMuted : colors.textSecondary,
+                              letterSpacing: '0.1em',
+                              textTransform: 'uppercase'
+                            }}>
+                              {study.resultLabel}
+                            </div>
+                          </div>
+
+                          {/* Metrics Grid */}
+                          <div style={{
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(3, 1fr)',
+                            gap: '12px',
+                            marginBottom: '32px'
+                          }}>
+                            {study.metrics.map((metric, i) => (
+                              <div key={i} style={{
+                                backgroundColor: hoveredCard === study.id ? `${colors.bg}90` : colors.bg,
+                                padding: '20px 12px',
+                                borderRadius: '12px',
+                                textAlign: 'center',
+                                border: `1px solid ${hoveredCard === study.id ? colors.border : `${study.color}20`}`,
+                                transition: 'all 0.3s ease'
+                              }}>
+                                <div style={{
+                                  fontSize: '28px',
+                                  fontWeight: 200,
+                                  color: hoveredCard === study.id ? colors.textPrimary : study.color,
+                                  marginBottom: '4px',
+                                  lineHeight: 1
+                                }}>
+                                  {metric.value}
+                                </div>
+                                <div style={{
+                                  fontSize: '10px',
+                                  color: colors.textMuted,
+                                  letterSpacing: '0.05em',
+                                  textTransform: 'uppercase'
+                                }}>
+                                  {metric.label}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+
+                          {/* CTA */}
+                          <div style={{
+                            padding: '24px',
+                            backgroundColor: hoveredCard === study.id ? colors.bg : study.color,
+                            borderRadius: '14px',
+                            textAlign: 'center',
+                            transition: 'all 0.3s ease'
+                          }}>
+                            <div style={{
+                              fontSize: '18px',
+                              fontWeight: 500,
+                              color: hoveredCard === study.id ? study.color : colors.bg,
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              gap: '12px'
+                            }}>
+                              <span>Explore the breakthrough</span>
+                              <span style={{
+                                fontSize: '22px',
+                                transform: hoveredCard === study.id ? 'translateX(6px)' : 'translateX(0)',
+                                transition: 'transform 0.3s ease'
+                              }}>
+                                →
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </section>
+
+              {/* Aggregate Metrics Section */}
+              <section style={{
+                padding: '120px 24px',
+                backgroundColor: colors.bg,
+                position: 'relative'
+              }}>
+                <div style={{
+                  maxWidth: '1200px',
+                  margin: '0 auto'
+                }}>
+                  <h2
+                    data-fade-id="metrics-title"
+                    style={{
+                      fontSize: 'clamp(40px, 6vw, 72px)',
+                      fontWeight: 200,
+                      textAlign: 'center',
+                      marginBottom: '80px',
+                      opacity: visibleElements.has('metrics-title') ? 1 : 0,
+                      transition: 'all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+                      letterSpacing: '-0.02em'
+                    }}
+                  >
+                    Combined impact
+                  </h2>
+
+                  <div
+                    data-fade-id="metrics-grid"
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                      gap: '48px',
+                      opacity: visibleElements.has('metrics-grid') ? 1 : 0,
+                      transition: 'all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s'
+                    }}
+                  >
+                    {[
+                      { value: '10.2M+', label: 'Total Views', color: colors.ritual },
+                      { value: '95+', label: 'Creators', color: colors.ecosia },
+                      { value: '45M+', label: 'Combined Reach', color: colors.ddg },
+                      { value: '11', label: 'Markets', color: colors.ritual }
+                    ].map((metric, i) => (
+                      <div key={i} style={{
+                        textAlign: 'center',
+                        padding: '40px 24px',
+                        backgroundColor: colors.bgCard,
+                        borderRadius: '24px',
+                        border: `1px solid ${metric.color}30`,
+                        transition: 'all 0.3s ease',
+                        cursor: 'default'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = 'translateY(-8px)';
+                        e.currentTarget.style.boxShadow = `0 24px 48px ${metric.color}30`;
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = 'translateY(0)';
+                        e.currentTarget.style.boxShadow = 'none';
+                      }}
+                      >
+                        <div style={{
+                          fontSize: '64px',
+                          fontWeight: 200,
+                          color: metric.color,
+                          marginBottom: '12px',
+                          lineHeight: 1
+                        }}>
+                          {metric.value}
+                        </div>
+                        <div style={{
+                          fontSize: '14px',
+                          color: colors.textMuted,
+                          letterSpacing: '0.1em',
+                          textTransform: 'uppercase'
+                        }}>
+                          {metric.label}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </section>
+
+              {/* Footer CTA */}
+              <section style={{
+                padding: '120px 24px',
+                backgroundColor: colors.bgAlt,
+                textAlign: 'center'
+              }}>
+                <div style={{
+                  maxWidth: '800px',
+                  margin: '0 auto'
+                }}>
+                  <h3
+                    data-fade-id="footer-title"
+                    style={{
+                      fontSize: 'clamp(32px, 5vw, 56px)',
+                      fontWeight: 200,
+                      marginBottom: '24px',
+                      opacity: visibleElements.has('footer-title') ? 1 : 0,
+                      transition: 'all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+                      letterSpacing: '-0.02em'
+                    }}
+                  >
+                    Ready to create your<br/>breakthrough?
+                  </h3>
+
+                  <p
+                    data-fade-id="footer-text"
+                    style={{
+                      fontSize: '18px',
+                      color: colors.textSecondary,
+                      marginBottom: '48px',
+                      lineHeight: 1.6,
+                      opacity: visibleElements.has('footer-text') ? 1 : 0,
+                      transition: 'all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s'
+                    }}
+                  >
+                    Let's discuss how we can drive extraordinary results for your brand
+                  </p>
+
+                  <button
+                    data-fade-id="footer-cta"
+                    onClick={() => window.open('https://cal.com/arron-daniels-wysmum/15min', '_blank')}
+                    style={{
+                      backgroundColor: 'transparent',
+                      color: colors.ritual,
+                      padding: '20px 48px',
+                      borderRadius: '12px',
+                      fontSize: '16px',
+                      fontWeight: 500,
+                      border: `2px solid ${colors.ritual}`,
+                      cursor: 'pointer',
+      
+                      transition: 'all 0.3s ease',
+                      letterSpacing: '0.05em',
+                      opacity: visibleElements.has('footer-cta') ? 1 : 0,
+                      boxShadow: `0 8px 24px ${colors.ritual}20`
+                    }}
+                    onMouseEnter={(e) => {
+                      e.target.style.backgroundColor = colors.ritual;
+                      e.target.style.color = colors.bg;
+                      e.target.style.transform = 'translateY(-2px)';
+                      e.target.style.boxShadow = `0 16px 32px ${colors.ritual}40`;
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.backgroundColor = 'transparent';
+                      e.target.style.color = colors.ritual;
+                      e.target.style.transform = 'translateY(0)';
+                      e.target.style.boxShadow = `0 8px 24px ${colors.ritual}20`;
+                    }}
+                  >
+                    Schedule a Call
+                  </button>
+
+                  <div style={{
+                    marginTop: '64px',
+                    fontSize: '12px',
+                    color: colors.textMuted,
+                    letterSpacing: '0.05em'
+                  }}>
+                    Cohort · Premium Influencer Marketing
+                  </div>
+                </div>
+              </section>
+
+              {/* This <style> tag is part of the React component's JSX.
+                React will handle placing this in the document head.
+              */}
+              <style>{`
+                @keyframes float {
+                  0%, 100% { 
+                    transform: translateY(0px); 
+                  }
+                  50% { 
+                    transform: translateY(-20px); 
+                  }
+                }
+                
+                @keyframes pulse {
+                  0%, 100% { 
+                    opacity: 0.3; 
+                  }
+                  50% { 
+                    opacity: 0.6; 
+                  }
+                }
+
+                @keyframes ping {
+                  75%, 100% {
+                    transform: scale(1.2);
+                    opacity: 0;
+                  }
+                }
+
+                * {
+                  -webkit-font-smoothing: antialiased;
+                  -moz-osx-font-smoothing: grayscale;
+                }
+
+                html {
+                  scroll-behavior: smooth;
+                }
+
+                body {
+                  margin: 0;
+                  padding: 0;
+                }
+              `}</style>
+            </div>
+          );
+        };
+
+        // Render the component to the #root element
+        ReactDOM.render(<CohortLanding />, document.getElementById('root'));
+    </script>
+</body>
+</html>
