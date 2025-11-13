@@ -44,6 +44,7 @@
             ritual: '#d4af37',
             ddg: '#DE5833',
             ecosia: '#5DD25E',
+            ritualLight: '#f0d060', // Added a lighter gold for gradients
             textPrimary: '#ffffff',
             textSecondary: '#a0a0a0',
             textMuted: '#707070',
@@ -158,6 +159,8 @@
           const openCaseStudy = (link) => {
             window.open(link, '_blank');
           };
+
+          const isMobile = window.innerWidth <= 768;
 
           return (
             <div style={{
@@ -286,7 +289,7 @@
                     position: 'relative',
                     width: '100%',
                     maxWidth: '1000px',
-                    height: '450px',
+                    height: isMobile ? '700px' : '450px', // Adjusted height for mobile
                     marginBottom: '80px',
                     opacity: visibleElements.has('brands') ? 1 : 0,
                     transition: 'all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.6s'
@@ -338,11 +341,10 @@
                     };
                     
                     // Mobile positioning
-                    const isMobile = window.innerWidth <= 768;
                     const mobilePositions = [
-                      { x: 50, y: 20 },  // ritual - top
+                      { x: 50, y: 15 },  // ritual - top (Was 20)
                       { x: 50, y: 50 },  // duckduckgo - middle
-                      { x: 50, y: 80 }   // ecosia - bottom
+                      { x: 50, y: 85 }   // ecosia - bottom (Was 80)
                     ];
                     
                     const position = isMobile ? mobilePositions[index] : study.position;
@@ -364,8 +366,8 @@
                         }}
                       >
                         <div style={{
-                          width: index === 1 ? '240px' : '210px',
-                          height: index === 1 ? '240px' : '210px',
+                          width: isMobile ? '180px' : (index === 1 ? '240px' : '210px'), // Smaller on mobile
+                          height: isMobile ? '180px' : (index === 1 ? '240px' : '210px'), // Smaller on mobile
                           borderRadius: '50%',
                           background: `radial-gradient(circle, ${study.color}10, ${colors.bg} 85%)`,
                           border: `3px solid ${study.color}`,
@@ -394,8 +396,8 @@
                             src={study.logo}
                             alt={study.title}
                             style={{
-                              maxWidth: index === 1 ? '160px' : '140px',
-                              maxHeight: index === 1 ? '160px' : '140px',
+                              maxWidth: isMobile ? '120px' : (index === 1 ? '160px' : '140px'), // Smaller on mobile
+                              maxHeight: isMobile ? '120px' : (index === 1 ? '160px' : '140px'), // Smaller on mobile
                               objectFit: 'contain',
                               filter: 'none',
                               position: 'relative',
@@ -502,7 +504,7 @@
                           transition: 'all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
                           transform: hoveredCard === study.id ? 'translateY(-12px) scale(1.02)' : 'translateY(0)',
                           boxShadow: hoveredCard === study.id ? `0 32px 64px ${study.color}50` : '0 8px 32px rgba(0,0,0,0.3)',
-                          opacity: visibleElements.has(`card-${study.id}`) ? 1 : 0, /* <-- FIX: Was {'...'} */
+                          opacity: visibleElements.has(`card-${study.id}`) ? 1 : 0,
                           position: 'relative',
                           overflow: 'hidden'
                         }}
@@ -686,169 +688,148 @@
                 </div>
               </section>
 
-              {/* Aggregate Metrics Section */}
-              <section style={{
-                padding: '120px 24px',
-                backgroundColor: colors.bg,
-                position: 'relative'
-              }}>
+              {/* Footer CTA - REPLACED WITH NEW STYLE */}
+              <section 
+                style={{ 
+                    padding: '120px 24px',
+                    backgroundColor: colors.bgAlt,
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    position: 'relative',
+                    overflow: 'hidden'
+                }}
+              >
+                {/* Ambient Gradient from example */}
                 <div style={{
-                  maxWidth: '1200px',
-                  margin: '0 auto'
-                }}>
-                  <h2
-                    data-fade-id="metrics-title"
-                    style={{
-                      fontSize: 'clamp(40px, 6vw, 72px)',
-                      fontWeight: 200,
-                      textAlign: 'center',
-                      marginBottom: '80px',
-                      opacity: visibleElements.has('metrics-title') ? 1 : 0,
-                      transition: 'all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-                      letterSpacing: '-0.02em'
-                    }}
-                  >
-                    Combined impact
-                  </h2>
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    width: '800px',
+                    height: '800px',
+                    background: `radial-gradient(circle, ${colors.ritual}10 0%, transparent 70%)`,
+                    borderRadius: '50%',
+                    filter: 'blur(100px)'
+                }} />
 
-                  <div
-                    data-fade-id="metrics-grid"
-                    style={{
-                      display: 'grid',
-                      gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-                      gap: '48px',
-                      opacity: visibleElements.has('metrics-grid') ? 1 : 0,
-                      transition: 'all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s'
-                    }}
-                  >
-                    {[
-                      { value: '10.2M+', label: 'Total Views', color: colors.ritual },
-                      { value: '95+', label: 'Creators', color: colors.ecosia },
-                      { value: '45M+', label: 'Combined Reach', color: colors.ddg },
-                      { value: '11', label: 'Markets', color: colors.ritual }
-                    ].map((metric, i) => (
-                      <div key={i} style={{
-                        textAlign: 'center',
-                        padding: '40px 24px',
-                        backgroundColor: colors.bgCard,
-                        borderRadius: '24px',
-                        border: `1px solid ${metric.color}30`,
-                        transition: 'all 0.3s ease',
-                        cursor: 'default'
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.transform = 'translateY(-8px)';
-                        e.currentTarget.style.boxShadow = `0 24px 48px ${metric.color}30`;
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.transform = 'translateY(0)';
-                        e.currentTarget.style.boxShadow = 'none';
-                      }}
-                      >
+                <div style={{ maxWidth: '1100px', margin: '0 auto', paddingLeft: '2rem', paddingRight: '2rem', paddingTop: '6rem', paddingBottom: '6rem', textAlign: 'center', position: 'relative', zIndex: 1 }}>
+                    {/* Title (Using original text) */}
+                    <h2 
+                        data-fade-id="footer-title" // Original fade-id
+                        style={{ 
+                            fontSize: 'clamp(40px, 6vw, 72px)', 
+                            fontWeight: 200, 
+                            marginBottom: '32px',
+                            lineHeight: 1.2,
+                            letterSpacing: '-0.02em',
+                            opacity: visibleElements.has('footer-title') ? 1 : 0,
+                            transform: visibleElements.has('footer-title') ? 'translateY(0)' : 'translateY(30px)',
+                            transition: 'all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+                        }}
+                    >
+                        Ready to create your<br/>breakthrough?
+                    </h2>
+                    
+                    {/* Subtitle (Using original text) */}
+                    <p 
+                        data-fade-id="footer-text" // Original fade-id
+                        style={{ 
+                            fontSize: 'clamp(20px, 3vw, 28px)', 
+                            color: colors.textSecondary, 
+                            marginBottom: '64px',
+                            lineHeight: 1.6,
+                            fontWeight: 300,
+                            maxWidth: '900px',
+                            margin: '0 auto 64px',
+                            opacity: visibleElements.has('footer-text') ? 1 : 0,
+                            transform: visibleElements.has('footer-text') ? 'translateY(0)' : 'translateY(30px)',
+                            transition: 'all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.1s'
+                        }}
+                    >
+                        Let's discuss how we can drive extraordinary results for your brand
+                    </p>
+
+                    {/* New CTA Box (from example) */}
+                    <div 
+                        data-fade-id="footer-cta" // Original fade-id
+                        style={{
+                            background: `linear-gradient(135deg, ${colors.bgCard}, ${colors.ritual}08)`,
+                            padding: '64px 48px',
+                            borderRadius: '24px',
+                            border: `1px solid ${colors.ritual}30`,
+                            maxWidth: '800px',
+                            margin: '0 auto',
+                            opacity: visibleElements.has('footer-cta') ? 1 : 0,
+                            transform: visibleElements.has('footer-cta') ? 'translateY(0)' : 'translateY(30px)',
+                            transition: 'all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.3s',
+                            position: 'relative',
+                            overflow: 'hidden'
+                        }}
+                    >
+                        {/* Ambient gradient inside box */}
                         <div style={{
-                          fontSize: '64px',
-                          fontWeight: 200,
-                          color: metric.color,
-                          marginBottom: '12px',
-                          lineHeight: 1
-                        }}>
-                          {metric.value}
+                            position: 'absolute',
+                            top: '-50%',
+                            right: '-20%',
+                            width: '400px',
+                            height: '400px',
+                            background: `radial-gradient(circle, ${colors.ritual}15 0%, transparent 70%)`,
+                            borderRadius: '50%',
+                            filter: 'blur(60px)',
+                            pointerEvents: 'none'
+                        }} />
+                        <div style={{ position: 'relative', zIndex: 1 }}>
+                            <h3 style={{ fontSize: '32px', fontWeight: 300, marginBottom: '20px' }}>
+                                Schedule a Call
+                            </h3>
+                            <p style={{ fontSize: '16px', color: colors.textSecondary, marginBottom: '40px', fontWeight: 300, lineHeight: 1.7 }}>
+                
+                            </p>
+                            
+                            {/* New button style (from example) */}
+                            <button 
+                                style={{
+                                    background: `linear-gradient(135deg, ${colors.ritual}, ${colors.ritualLight})`,
+                                    color: colors.bg,
+                                    padding: '20px 56px',
+                                    borderRadius: '12px',
+                                    fontSize: '16px',
+                                    fontWeight: 500,
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.3s ease',
+                                    letterSpacing: '0.05em',
+                                    textTransform: 'uppercase',
+                                    boxShadow: `0 8px 24px ${colors.ritual}40`
+                                }}
+                                onClick={() => window.open('https://cal.com/arron-daniels-wysmum/15min', '_blank')}
+                                onMouseOver={(e) => {
+                                    e.target.style.transform = 'translateY(-2px)';
+                                    e.target.style.boxShadow = `0 12px 32px ${colors.ritual}60`;
+                                }}
+                                onMouseOut={(e) => {
+                                    e.target.style.transform = 'translateY(0)';
+                                    e.target.style.boxShadow = `0 8px 24px ${colors.ritual}40`;
+                                }}
+                            >
+                                Let's Talk Strategy
+                            </button>
                         </div>
-                        <div style={{
-                          fontSize: '14px',
-                          color: colors.textMuted,
-                          letterSpacing: '0.1em',
-                          textTransform: 'uppercase'
-                        }}>
-                          {metric.label}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                    </div>
+
+                    {/* Original footer text, in the new style */}
+                    <div style={{
+                        marginTop: '80px',
+                        fontSize: '13px',
+                        color: colors.textMuted,
+                        fontWeight: 300,
+                        letterSpacing: '0.05em'
+                    }}>
+                        Cohort · Premium Influencer Marketing
+                    </div>
                 </div>
-              </section>
-
-              {/* Footer CTA */}
-              <section style={{
-                padding: '120px 24px',
-                backgroundColor: colors.bgAlt,
-                textAlign: 'center'
-              }}>
-                <div style={{
-                  maxWidth: '800px',
-                  margin: '0 auto'
-                }}>
-                  <h3
-                    data-fade-id="footer-title"
-                    style={{
-                      fontSize: 'clamp(32px, 5vw, 56px)',
-                      fontWeight: 200,
-                      marginBottom: '24px',
-                      opacity: visibleElements.has('footer-title') ? 1 : 0,
-                      transition: 'all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-                      letterSpacing: '-0.02em'
-                    }}
-                  >
-                    Ready to create your<br/>breakthrough?
-                  </h3>
-
-                  <p
-                    data-fade-id="footer-text"
-                    style={{
-                      fontSize: '18px',
-                      color: colors.textSecondary,
-                      marginBottom: '48px',
-                      lineHeight: 1.6,
-                      opacity: visibleElements.has('footer-text') ? 1 : 0,
-                      transition: 'all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s'
-                    }}
-                  >
-                    Let's discuss how we can drive extraordinary results for your brand
-                  </p>
-
-                  <button
-                    data-fade-id="footer-cta"
-                    onClick={() => window.open('https://cal.com/arron-daniels-wysmum/15min', '_blank')}
-                    style={{
-                      backgroundColor: 'transparent',
-                      color: colors.ritual,
-                      padding: '20px 48px',
-                      borderRadius: '12px',
-                      fontSize: '16px',
-                      fontWeight: 500,
-                      border: `2px solid ${colors.ritual}`,
-                      cursor: 'pointer',
-                      transition: 'all 0.3s ease',
-                      letterSpacing: '0.05em',
-                      opacity: visibleElements.has('footer-cta') ? 1 : 0,
-                      boxShadow: `0 8px 24px ${colors.ritual}20`
-                    }}
-                    onMouseEnter={(e) => {
-                      e.target.style.backgroundColor = colors.ritual;
-                      e.target.style.color = colors.bg;
-                      e.target.style.transform = 'translateY(-2px)';
-                      e.target.style.boxShadow = `0 16px 32px ${colors.ritual}40`;
-                    }}
-                    onMouseLeave={(e) => {
-                      e.target.style.backgroundColor = 'transparent';
-                      e.target.style.color = colors.ritual;
-                      e.target.style.transform = 'translateY(0)';
-                      e.target.style.boxShadow = `0 8px 24px ${colors.ritual}20`;
-                    }}
-                  >
-                    Schedule a Call
-                  </button>
-
-                  <div style={{
-                    marginTop: '64px',
-                    fontSize: '12px',
-                    color: colors.textMuted,
-                    letterSpacing: '0.05em'
-                  }}>
-                    Cohort · Premium Influencer Marketing
-                  </div>
-                </div>
-              </section>
+            </section>
 
               <style>{`
                 @keyframes float {
