@@ -111,7 +111,7 @@
                 { value: '4', label: 'Markets' }
               ],
               color: colors.ritual,
-              link: 'ritual_case_study.html',
+              link: 'https://rituals.wearecohort.com/standard/',
               gradient: `radial-gradient(circle at 20% 50%, ${colors.ritual}15, transparent 50%)`,
               position: { x: 15, y: 50 }
             },
@@ -130,7 +130,7 @@
                 { value: '4.5%', label: 'Peak ER' }
               ],
               color: colors.ddg,
-              link: 'duckduckgo-case-study.html',
+              link: 'https://duckduckgo.wearecohort.com/standard/',
               gradient: `radial-gradient(circle at 50% 50%, ${colors.ddg}15, transparent 50%)`,
               position: { x: 50, y: 50 }
             },
@@ -149,7 +149,7 @@
                 { value: '$6', label: 'Peak CPM' }
               ],
               color: colors.ecosia,
-              link: 'ecosia_case_study.html',
+              link: 'https://ecosia.wearecohort.com/standard/',
               gradient: `radial-gradient(circle at 80% 50%, ${colors.ecosia}15, transparent 50%)`,
               position: { x: 85, y: 50 }
             }
@@ -302,12 +302,25 @@
                     pointerEvents: 'none',
                     zIndex: 1
                   }}>
-                    <line x1="20%" y1="50%" x2="50%" y2="50%" stroke={colors.ritual} strokeWidth="2" opacity="0.3" strokeDasharray="5,5">
-                      <animate attributeName="stroke-dashoffset" from="0" to="10" dur="1s" repeatCount="indefinite" />
-                    </line>
-                    <line x1="50%" y1="50%" x2="80%" y2="50%" stroke={colors.ecosia} strokeWidth="2" opacity="0.3" strokeDasharray="5,5">
-                      <animate attributeName="stroke-dashoffset" from="0" to="10" dur="1s" repeatCount="indefinite" />
-                    </line>
+                    {window.innerWidth > 768 ? (
+                      <>
+                        <line x1="20%" y1="50%" x2="50%" y2="50%" stroke={colors.ritual} strokeWidth="2" opacity="0.3" strokeDasharray="5,5">
+                          <animate attributeName="stroke-dashoffset" from="0" to="10" dur="1s" repeatCount="indefinite" />
+                        </line>
+                        <line x1="50%" y1="50%" x2="80%" y2="50%" stroke={colors.ecosia} strokeWidth="2" opacity="0.3" strokeDasharray="5,5">
+                          <animate attributeName="stroke-dashoffset" from="0" to="10" dur="1s" repeatCount="indefinite" />
+                        </line>
+                      </>
+                    ) : (
+                      <>
+                        <line x1="50%" y1="20%" x2="50%" y2="50%" stroke={colors.ritual} strokeWidth="2" opacity="0.3" strokeDasharray="5,5">
+                          <animate attributeName="stroke-dashoffset" from="0" to="10" dur="1s" repeatCount="indefinite" />
+                        </line>
+                        <line x1="50%" y1="50%" x2="50%" y2="80%" stroke={colors.ecosia} strokeWidth="2" opacity="0.3" strokeDasharray="5,5">
+                          <animate attributeName="stroke-dashoffset" from="0" to="10" dur="1s" repeatCount="indefinite" />
+                        </line>
+                      </>
+                    )}
                   </svg>
 
                   {/* Brand Logos - Mouse Interactive */}
@@ -324,6 +337,16 @@
                       return '0px';
                     };
                     
+                    // Mobile positioning
+                    const isMobile = window.innerWidth <= 768;
+                    const mobilePositions = [
+                      { x: 50, y: 20 },  // ritual - top
+                      { x: 50, y: 50 },  // duckduckgo - middle
+                      { x: 50, y: 80 }   // ecosia - bottom
+                    ];
+                    
+                    const position = isMobile ? mobilePositions[index] : study.position;
+                    
                     return (
                       <div
                         key={study.id}
@@ -332,8 +355,8 @@
                         onMouseLeave={() => setHoveredLogo(null)}
                         style={{
                           position: 'absolute',
-                          left: `${study.position.x}%`,
-                          top: `${study.position.y}%`,
+                          left: `${position.x}%`,
+                          top: `${position.y}%`,
                           transform: `translate(-50%, -50%) translate(${parallaxX}px, ${parallaxY}px) scale(${scale})`,
                           cursor: 'pointer',
                           transition: 'transform 0.3s ease',
@@ -479,7 +502,7 @@
                           transition: 'all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
                           transform: hoveredCard === study.id ? 'translateY(-12px) scale(1.02)' : 'translateY(0)',
                           boxShadow: hoveredCard === study.id ? `0 32px 64px ${study.color}50` : '0 8px 32px rgba(0,0,0,0.3)',
-                          opacity: visibleElements.has(`card-${study.id}`) ? 1 : 0,
+                          opacity: visibleElements.has(`card-${study.id}`) ? 1 : 0, /* <-- FIX: Was {'...'} */
                           position: 'relative',
                           overflow: 'hidden'
                         }}
@@ -795,7 +818,6 @@
                       fontWeight: 500,
                       border: `2px solid ${colors.ritual}`,
                       cursor: 'pointer',
-      
                       transition: 'all 0.3s ease',
                       letterSpacing: '0.05em',
                       opacity: visibleElements.has('footer-cta') ? 1 : 0,
@@ -828,9 +850,6 @@
                 </div>
               </section>
 
-              {/* This <style> tag is part of the React component's JSX.
-                React will handle placing this in the document head.
-              */}
               <style>{`
                 @keyframes float {
                   0%, 100% { 
